@@ -1,18 +1,26 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <SidebarLayout class="home">
+
+    <template v-slot:sidebar>Items Filter</template>
+
+    <template v-slot:header>
+      <MainNav/>
+    </template>
+
+    <section class="p bg-light-3">
+      <h1>Items List</h1>
+
+      <PlateEl v-for="i in 200" :key="i" class="mb">
+        Items List {{ i }}
+      </PlateEl>
+    </section>
+
+  </SidebarLayout>
 </template>
 
 <script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue';
-
 export default {
   name: 'HomeView',
-  components: {
-    HelloWorld,
-  },
+  components: {},
 };
 </script>
