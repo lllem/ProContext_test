@@ -3,6 +3,7 @@ import BaseLayout from '@/components/BaseLayout.vue';
 import SidebarLayout from '@/components/SidebarLayout.vue';
 import MainNav from '@/components/MainNav.vue';
 import PlateEl from '@/components/PlateEl.vue';
+import ItemEl from '@/components/ItemEl.vue';
 import App from './App.vue';
 import router from './router';
 import store from './store';
@@ -16,4 +17,5 @@ createApp(App)
   .component('SidebarLayout', SidebarLayout)
   .component('MainNav', MainNav)
   .component('PlateEl', PlateEl)
+  .component('ItemEl', ItemEl)
   .mount('#app');
