@@ -102,6 +102,14 @@ body {
   margin-bottom: 1rem;
 }
 
+.mb-2 {
+  margin-bottom: 0.25rem;
+}
+
+.ms-1 {
+  margin-left: 0.25rem;
+}
+
 .text-center {
   text-align: center;
 }
@@ -116,4 +124,10 @@ body {
 
 .inline-block {
   display: inline-block;
+}
+
+.muted {
+  opacity: 0.5;
+  font-size: 0.75rem;
+  color: #1066b3;
 }

@@ -30,7 +30,7 @@
   flex-grow: 1;
 
   .sidebar-layout__sidebar {
-    width: 280px;
+    width: 320px;
     height: 100vh;
     overflow-y: scroll;
     overflow-x: hidden;
