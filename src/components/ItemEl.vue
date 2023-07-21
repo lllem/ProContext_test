@@ -2,17 +2,17 @@
 <template>
   <label
   class="item-el"
-  :style="`background-color: hsl(${ color }, 100%, 40%)`"
+  :style="`background-color: ${ color }`"
   >
     <input
     type="checkbox"
     v-model="model"
     :value="value"
     :checked="value"
+    :title="color"
     />
 
     <span v-if="model">✓</span>
-
   </label>
 </template>
 
@@ -22,8 +22,8 @@ export default {
     modelValue: { type: [Array, Boolean] },
     value: { type: [Boolean, Object] },
     color: {
-      type: Number,
-      default: 120,
+      type: String,
+      default: 'violet',
     },
   },
   data() {
@@ -43,13 +43,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$size: 2rem;
+$size: 1.25rem;
 
 .item-el {
   display: inline-block;
   width: $size;
   height: $size;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   overflow: hidden;
   position: relative;
   color: white;
