@@ -12,7 +12,7 @@
       >
         <summary>
           <p>
-            <button @click="superCheckClick(event, list)" class="super-check border-light">
+            <button @click.prevent="superCheckClick(event, list)" class="super-check border-light">
               <span v-if="list.checked_unchecked[0] && list.checked_unchecked[1]">•</span>
               <span v-else-if="list.checked_unchecked[0] && !list.checked_unchecked[1]">✔</span>
               <span v-else>&nbsp;</span>
