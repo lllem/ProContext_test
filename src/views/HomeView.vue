@@ -62,7 +62,7 @@
           </summary>
 
           <!-- Сортированный список -->
-          <div class="items-grid" v-if="list.sorted">
+          <div class="items-grid mt-2" v-if="list.sorted">
             <div v-for="uniqueItem in list.uniqueItems" :key="uniqueItem.color" class="inline-block w-100">
               <template
               v-for="item in list.items"
@@ -80,7 +80,7 @@
           </div>
 
           <!-- Перемешанный список -->
-          <div class="items-grid" v-else>
+          <div class="items-grid mt-2" v-else>
             <ItemEl
             class="item"
             v-for="item in list.items"
@@ -284,16 +284,36 @@ details.sidebar-spoiler {
 }
 
 .main-spoiler {
+
+  &[open] .main-spoiler__header {
+    &::before {
+      content: '−';
+    }
+  }
+
   .main-spoiler__header {
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-between;
     align-items: center;
+    position: relative;
+    padding-left: 1.75rem;
+
+    &::before {
+      content: '+';
+      position: absolute;
+      left: 0;
+      transform: translateY(-0.2rem);
+      font-size: 2rem;
+      color: $blue;
+      opacity: 0.5;
+    }
 
     .main-spoiler__title {
       cursor: pointer;
       color: $blue;
-      border-bottom: 1px dashed $blue;
+      margin: 0;
+      // border-bottom: 1px dashed $blue;
     }
 
     .main-spoiler__toggler {
