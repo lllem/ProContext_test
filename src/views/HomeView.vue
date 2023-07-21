@@ -8,19 +8,30 @@
       v-for="list in lists"
       :key='list.title'
       class="sidebar-spoiler"
+      open
       >
         <summary>
-          <p>{{ list.title }}</p>
+          <p>{{ list.title }} <small class="muted ms-1">{{ `${ list.uniqueItems.length } / ${ list.items.length }` }}</small></p>
+
+          <button @click="countItems(list)">{{ list.title }}</button>
         </summary>
 
         <div
         v-for="item in list.uniqueItems"
         :key="item.color"
-        class="mb"
+        class="sidebar-spoiler__item mb-2"
         >
-          <input type="checkbox" v-model="item.checked">
-          <input type="color" v-model="item.color">
-          {{ item.qty }}
+          <div class="sidebar-spoiler__item-subtitle">
+            <input type="checkbox" v-model="item.checked">
+            <input type="color" v-model="item.color">
+            <small>{{ item.color }}</small>
+          </div>
+
+          <div class="counter">
+            <button @click="changeQty(list, item, 'remove')" class="muted">−</button>
+            <span class="counter__qty">{{ item.qty }}</span>
+            <button @click="changeQty(list, item, 'add')" class="muted">+</button>
+          </div>
         </div>
 
         <!-- <small><pre>{{ list }}</pre></small> -->
@@ -171,12 +182,30 @@ export default {
       }
     },
 
+    checkboxesHandler(list) {
+      console.log(list);
+    },
+
     countItems(list) {
       // Считаем количество элементов для каждого цвета в списке
       list.uniqueItems.forEach((uniqueItem) => {
         const uuuu = list.items.filter((item) => item.color === uniqueItem.color);
         uniqueItem.qty = uuuu.length;
       });
+    },
+
+    changeQty(list, item, change) {
+      // Добавляем/Удаляем элементы списка
+      // console.log(list, item, change);
+      if (change === 'add') {
+        // Добавляем элемент в случайное место
+        list.items.splice(Math.round(Math.random() * (list.items.length - 1)), 0, item);
+      } else if (change === 'remove' && item.qty > 1) {
+        const delIndex = list.items.findIndex((currentItem) => currentItem.color === item.color);
+        list.items.splice(delIndex, 1);
+        console.log(delIndex);
+      }
+      this.countItems(list);
     },
   },
 
@@ -240,6 +269,18 @@ details.sidebar-spoiler {
       }
     }
   }
+
+  .sidebar-spoiler__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .sidebar-spoiler__item-subtitle {
+      display: flex;
+      justify-content: start;
+      align-items: center;
+    }
+  }
 }
 
 .main-spoiler {
@@ -283,6 +324,39 @@ input[type="color"] {
   &::-webkit-color-swatch,
   &::-moz-color-swatch {
     border-radius: 0.25rem;
+  }
+}
+
+.counter {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  background-color: #fff;
+  height: 1.75rem;
+  line-height: 1.75rem;
+  font-size: 0.8rem;
+  border: 1px solid #b5cbe1;
+  overflow: hidden;
+  border-radius: 1rem;
+  font-weight: bold;
+
+  &, & * {
+    position: relative;
+  }
+
+  & button {
+    border: none;
+    background-color: transparent;
+    padding: 0 0.75rem;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    z-index: 1;
+  }
+
+  .counter__qty {
+    padding: 0;
+    margin: 0 -0.25rem;
   }
 }
 </style>
