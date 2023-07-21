@@ -64,42 +64,62 @@
           <summary class="main-spoiler__header">
             <h2 class="mb main-spoiler__title">{{ list.title }}</h2>
 
-            <label :for="`toggler__${list.title}`" class="main-spoiler__toggler">
+            <label
+            :for="`toggler__${list.title}`"
+            class="main-spoiler__toggler"
+            v-if="list.items.length > 0 && list.checked_unchecked[0]"
+            >
               {{ list.sorted ? 'Перемешать' : 'Сортировать' }}
             </label>
-            <input :id="`toggler__${list.title}`" class="d-none" type="checkbox" v-model="list.sorted">
+
+            <input
+            :id="`toggler__${list.title}`"
+            class="d-none"
+            type="checkbox"
+            v-model="list.sorted"
+            >
 
           </summary>
 
           <!-- Сортированный список -->
           <div class="items-grid mt-2" v-if="list.sorted">
-            <div v-for="uniqueItem in list.uniqueItems" :key="uniqueItem.color" class="inline-block w-100">
-              <template
-              v-for="item in list.items"
-              :key="item"
-              >
-                <ItemEl
-                class="item"
-                :color="item.color"
-                v-model="item.checked"
-                v-if="uniqueItem.color === item.color"
-                @change="checkboxesHandler(list)"
-                />
-              </template>
-            </div>
+            <template
+            v-for="uniqueItem in list.uniqueItems"
+            :key="uniqueItem.color"
+            class=""
+            >
+              <div v-if="uniqueItem.checked && (uniqueItem.qty > 0)" class="inline-block w-100">
+                <template
+                v-for="item in list.items"
+                :key="item"
+                >
+                  <ItemEl
+                  class="item"
+                  :color="item.color"
+                  v-model="item.checked"
+                  v-if="uniqueItem.color === item.color && uniqueItem.checked"
+                  @change="checkboxesHandler(list)"
+                  />
+                </template>
+              </div>
+            </template>
 
           </div>
 
           <!-- Перемешанный список -->
           <div class="items-grid mt-2" v-else>
-            <ItemEl
-            class="item"
+            <template
             v-for="item in list.items"
             :key="item"
-            :color="item.color"
-            v-model="item.checked"
-            @change="checkboxesHandler(list)"
-            />
+            >
+              <ItemEl
+              v-if="item.checked"
+              class="item"
+              :color="item.color"
+              v-model="item.checked"
+              @change="checkboxesHandler(list)"
+              />
+            </template>
           </div>
         </details>
 
@@ -171,7 +191,7 @@ export default {
       this.colors.forEach((color) => {
         uniqueItemsList.push({
           color,
-          checked: false,
+          checked: true,
         });
       });
 
@@ -210,8 +230,6 @@ export default {
       const checkedExissts = (checkedItem >= 0);
       const uncheckedExissts = (uncheckedItem >= 0);
 
-      console.log(checkedExissts, uncheckedExissts);
-
       list.checked_unchecked = [checkedExissts, uncheckedExissts];
     },
 
@@ -243,11 +261,10 @@ export default {
 
     changeQty(list, item, change) {
       // Добавляем/Удаляем элементы списка
-      // console.log(list, item, change);
       if (change === 'add') {
         // Добавляем элемент в случайное место
         list.items.splice(Math.round(Math.random() * (list.items.length - 1)), 0, item);
-      } else if (change === 'remove' && item.qty > 1) {
+      } else if (change === 'remove' && item.qty > 0) {
         const delIndex = list.items.findIndex((currentItem) => currentItem.color === item.color);
         list.items.splice(delIndex, 1);
         console.log(delIndex);
