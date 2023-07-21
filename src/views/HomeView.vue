@@ -11,9 +11,15 @@
       open
       >
         <summary>
-          <p>{{ list.title }} <small class="muted ms-1">{{ `${ list.uniqueItems.length } / ${ list.items.length }` }}</small></p>
+          <p>
+            <button @click="superCheckClick(event, list)" class="super-check border-light">
+              <span v-if="list.checked_unchecked[0] && list.checked_unchecked[1]">•</span>
+              <span v-else-if="list.checked_unchecked[0] && !list.checked_unchecked[1]">✔</span>
+              <span v-else>&nbsp;</span>
+            </button>{{ list.title }}
+          </p>
 
-          <button @click="countItems(list)">{{ list.title }}</button>
+          <small class="muted ms-1">{{ `${ list.uniqueItems.length } / ${ list.items.length }` }}</small>
         </summary>
 
         <div
@@ -22,12 +28,16 @@
         class="sidebar-spoiler__item mb-2"
         >
           <div class="sidebar-spoiler__item-subtitle">
-            <input type="checkbox" v-model="item.checked">
+            <input
+            type="checkbox"
+            v-model="item.checked"
+            @change="checkboxesHandler(list)"
+            >
             <input type="color" v-model="item.color">
             <small>{{ item.color }}</small>
           </div>
 
-          <div class="counter">
+          <div class="counter border-light">
             <button @click="changeQty(list, item, 'remove')" class="muted">−</button>
             <span class="counter__qty">{{ item.qty }}</span>
             <button @click="changeQty(list, item, 'add')" class="muted">+</button>
@@ -73,6 +83,7 @@
                 :color="item.color"
                 v-model="item.checked"
                 v-if="uniqueItem.color === item.color"
+                @change="checkboxesHandler(list)"
                 />
               </template>
             </div>
@@ -87,6 +98,7 @@
             :key="item"
             :color="item.color"
             v-model="item.checked"
+            @change="checkboxesHandler(list)"
             />
           </div>
         </details>
@@ -146,6 +158,8 @@ export default {
 
         this.countItems(anotherList);
 
+        this.checkboxesHandler(anotherList);
+
         this.lists.push(anotherList);
       }
     },
@@ -183,14 +197,47 @@ export default {
     },
 
     checkboxesHandler(list) {
-      console.log(list);
+      // Ищем отмеченный элемент
+      const checkedItem = list.uniqueItems.findIndex(
+        (currentItem) => currentItem.checked === true,
+      );
+
+      // Ищем НЕотмеченный элемент
+      const uncheckedItem = list.uniqueItems.findIndex(
+        (currentItem) => currentItem.checked === false,
+      );
+
+      const checkedExissts = (checkedItem >= 0);
+      const uncheckedExissts = (uncheckedItem >= 0);
+
+      console.log(checkedExissts, uncheckedExissts);
+
+      list.checked_unchecked = [checkedExissts, uncheckedExissts];
     },
 
+    // Обрабатываем клик по чекбоксу уровня списка
+    superCheckClick(event, list) {
+      if (list.checked_unchecked[1]) {
+        // Если есть хотя бы один неотмеченный чекбокс - отмечаем все
+        list.uniqueItems.forEach((uniqueItem) => {
+          uniqueItem.checked = true;
+        });
+      } else {
+        // Если все чекбоксы отмечены - снимаем галочки со всех
+        list.uniqueItems.forEach((uniqueItem) => {
+          uniqueItem.checked = false;
+        });
+      }
+
+      this.checkboxesHandler(list);
+    },
+
+    // Считаем элементы каждого цвета в списке
     countItems(list) {
       // Считаем количество элементов для каждого цвета в списке
       list.uniqueItems.forEach((uniqueItem) => {
-        const uuuu = list.items.filter((item) => item.color === uniqueItem.color);
-        uniqueItem.qty = uuuu.length;
+        const currentColor = list.items.filter((item) => item.color === uniqueItem.color);
+        uniqueItem.qty = currentColor.length;
       });
     },
 
@@ -216,7 +263,7 @@ export default {
 </script>
 
 <style lang="scss">
-$blue: #0070ff;
+@import '@/assets/styles/tokens.scss';
 
 .items-grid {
   width: 100%;
@@ -246,6 +293,17 @@ details.sidebar-spoiler {
     justify-content: space-between;
     padding-left: 1.25rem;
     position: relative;
+
+    & > p {
+      display: flex;
+      flex-flow: row nowrap;
+      align-items: center;
+      gap: 0.5rem;
+
+      > .super-check {
+        // mar
+      }
+    }
 
     &::before {
       content: '+';
@@ -355,7 +413,6 @@ input[type="color"] {
   height: 1.75rem;
   line-height: 1.75rem;
   font-size: 0.8rem;
-  border: 1px solid #b5cbe1;
   overflow: hidden;
   border-radius: 1rem;
   font-weight: bold;
@@ -377,6 +434,29 @@ input[type="color"] {
   .counter__qty {
     padding: 0;
     margin: 0 -0.25rem;
+  }
+}
+
+.super-check {
+  $super-check-size: 1rem;
+
+  width: $super-check-size;
+  height: $super-check-size;
+  font-size: 1rem;
+  position: relative;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  user-select: none;
+
+  > span {
+    width: 100%;
+    height: 0;
+    text-align: center;
+    line-height: 0;
+    position: absolute;
+    top: 60%;
+    right: 0%;
   }
 }
 </style>

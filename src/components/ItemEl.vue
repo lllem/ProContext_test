@@ -12,7 +12,7 @@
     :title="color"
     />
 
-    <span v-if="model">✓</span>
+    <span v-if="model">✔</span>
   </label>
 </template>
 
