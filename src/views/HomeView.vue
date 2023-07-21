@@ -7,7 +7,7 @@
       <details
       v-for="list in lists"
       :key='list.title'
-      class="mb"
+      class="sidebar-spoiler mb"
       >
         <summary><p>{{ list.title }}</p></summary>
 
@@ -18,10 +18,9 @@
         >
           <input type="checkbox" v-model="item.checked">
           <input type="color" v-model="item.color">
-          <!-- <small>{{ item }}</small> -->
         </div>
 
-        <!-- <small><pre>{{ list }}</pre></small> -->
+        <small><pre>{{ list }}</pre></small>
       </details>
     </template>
     <!-- / sidebar -->
@@ -37,19 +36,46 @@
       :key='list.title'
       class="mb"
       >
-        <h2 class="mb">{{ list.title }}</h2>
+        <details class="main-spoiler">
+          <summary class="main-spoiler__header">
+            <h2 class="mb main-spoiler__title">{{ list.title }}</h2>
 
-        <div class="items-grid">
+            <label :for="`toggler__${list.title}`" class="main-spoiler__toggler">
+              {{ list.sorted ? 'Перемешать' : 'Сортировать' }}
+            </label>
+            <input :id="`toggler__${list.title}`" class="d-none" type="checkbox" v-model="list.sorted">
 
-          <ItemEl
-          class="item"
-          v-for="(item, l) in list.items"
-          :key="item"
-          :color="item.color"
-          v-model="item.checked"
-          />
+          </summary>
 
-        </div>
+          <!-- Сортированный список -->
+          <div class="items-grid" v-if="list.sorted">
+            <div v-for="uniqueItem in list.uniqueItems" :key="uniqueItem.color" class="inline-block w-100">
+              <span
+              v-for="item in list.items"
+              :key="item"
+              >
+                <ItemEl
+                class="item"
+                :color="item.color"
+                v-model="item.checked"
+                v-if="uniqueItem.color === item.color"
+                />
+              </span>
+            </div>
+
+          </div>
+
+          <!-- Перемешанный список -->
+          <div class="items-grid" v-else>
+            <ItemEl
+            class="item"
+            v-for="item in list.items"
+            :key="item"
+            :color="item.color"
+            v-model="item.checked"
+            />
+          </div>
+        </details>
 
       </PlateEl>
     </section>
@@ -87,9 +113,11 @@ export default {
         const title = `List ${listNumber + 1}`; // Название списка
         const items = []; // элементы списка
         const uniqueItems = this.createUniqueItemsList(); // список уникальных элементов
+        const sorted = false; // сортированный/перемешанный список
 
         const anotherList = {
           title,
+          sorted,
           uniqueItems,
           items,
         };
@@ -104,12 +132,12 @@ export default {
       const uniqueItemsList = [];
 
       // Заполняем массив с уникальными цветами
-      for (let i = 0; i < this.colors.length; i += 1) {
+      this.colors.forEach((color) => {
         uniqueItemsList.push({
-          color: this.colors[i],
+          color,
           checked: false,
         });
-      }
+      });
 
       // Оставляем 4-10 уникальных цветов
       for (let i = 0; i < 6; i += 1) {
@@ -123,10 +151,11 @@ export default {
     fillItemsList(list) {
       // Заполняем список элементов
       for (let i = 0; i < list.uniqueItems.length; i += 1) {
-        // list.items.push(list.uniqueItems[i]);
+        list.items.push(list.uniqueItems[i]); // Сразу добавляем элемент, чтобы был как минимум один элемент нужного цвета
+
         for (let l = 0; l < 30; l += 1) {
           const randomIndex = Math.round(Math.random() * (list.items.length - 1)); // случайное место в массиве, куда будет добавлен элемент
-          list.items.splice(randomIndex, 0, list.uniqueItems[i]);
+          if (Math.round(Math.random())) list.items.splice(randomIndex, 0, list.uniqueItems[i]);
         }
       }
     },
@@ -155,7 +184,7 @@ export default {
   }
 }
 
-details {
+details.sidebar-spoiler {
   padding: 0.5em 0;
   border-bottom: 1px solid #aaa;
 
@@ -172,6 +201,37 @@ details {
   &[open] {
     summary {
       margin-bottom: 0.5em;
+    }
+  }
+}
+
+.main-spoiler {
+  .main-spoiler__header {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    .main-spoiler__title {
+      cursor: pointer;
+      color: #0070ff;
+      border-bottom: 1px dashed blue;
+    }
+
+    .main-spoiler__toggler {
+      display: inline-block;
+      background-color: #9ccff3;
+      color: blue;
+      height: 2rem;
+      border-radius: 1rem;
+      cursor: pointer;
+      padding: 0 1rem;
+      line-height: 2rem;
+      user-select: none;
+      font-weight: 700;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
     }
   }
 }
