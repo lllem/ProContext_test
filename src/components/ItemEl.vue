@@ -43,7 +43,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$size: 1.25rem;
+$size: 1rem;
 
 .item-el {
   display: inline-block;

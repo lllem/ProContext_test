@@ -20,7 +20,7 @@
           <input type="color" v-model="item.color">
         </div>
 
-        <small><pre>{{ list }}</pre></small>
+        <!-- <small><pre>{{ list }}</pre></small> -->
       </details>
     </template>
     <!-- / sidebar -->
@@ -36,7 +36,7 @@
       :key='list.title'
       class="mb"
       >
-        <details class="main-spoiler">
+        <details class="main-spoiler" open>
           <summary class="main-spoiler__header">
             <h2 class="mb main-spoiler__title">{{ list.title }}</h2>
 
@@ -50,7 +50,7 @@
           <!-- Сортированный список -->
           <div class="items-grid" v-if="list.sorted">
             <div v-for="uniqueItem in list.uniqueItems" :key="uniqueItem.color" class="inline-block w-100">
-              <span
+              <template
               v-for="item in list.items"
               :key="item"
               >
@@ -60,7 +60,7 @@
                 v-model="item.checked"
                 v-if="uniqueItem.color === item.color"
                 />
-              </span>
+              </template>
             </div>
 
           </div>
