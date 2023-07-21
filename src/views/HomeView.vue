@@ -7,9 +7,11 @@
       <details
       v-for="list in lists"
       :key='list.title'
-      class="sidebar-spoiler mb"
+      class="sidebar-spoiler"
       >
-        <summary><p>{{ list.title }}</p></summary>
+        <summary>
+          <p>{{ list.title }}</p>
+        </summary>
 
         <div
         v-for="item in list.uniqueItems"
@@ -18,6 +20,7 @@
         >
           <input type="checkbox" v-model="item.checked">
           <input type="color" v-model="item.color">
+          {{ item.qty }}
         </div>
 
         <!-- <small><pre>{{ list }}</pre></small> -->
@@ -84,7 +87,7 @@
   </SidebarLayout>
 </template>
 
-<!-- eslint-disable max-len -->
+<!-- eslint-disable max-len, no-param-reassign -->
 <script>
 export default {
   name: 'HomeView',
@@ -106,6 +109,12 @@ export default {
     };
   },
 
+  computed: {
+    listsChange() {
+      return false;
+    },
+  },
+
   methods: {
     createLists() {
       // Создаём списки (чтобы не создавать их вручную)
@@ -123,6 +132,8 @@ export default {
         };
 
         this.fillItemsList(anotherList);
+
+        this.countItems(anotherList);
 
         this.lists.push(anotherList);
       }
@@ -159,6 +170,14 @@ export default {
         }
       }
     },
+
+    countItems(list) {
+      // Считаем количество элементов для каждого цвета в списке
+      list.uniqueItems.forEach((uniqueItem) => {
+        const uuuu = list.items.filter((item) => item.color === uniqueItem.color);
+        uniqueItem.qty = uuuu.length;
+      });
+    },
   },
 
   mounted() {
@@ -168,6 +187,8 @@ export default {
 </script>
 
 <style lang="scss">
+$blue: #0070ff;
+
 .items-grid {
   width: 100%;
 
@@ -186,12 +207,24 @@ export default {
 
 details.sidebar-spoiler {
   padding: 0.5em 0;
-  border-bottom: 1px solid #aaa;
+  border-bottom: 1px solid #bdd0e9;
+  border-top: 1px solid #fff;
 
   summary {
     font-weight: bold;
-    margin: -0.5em -0.5em 0;
-    padding: 0.5em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 1.25rem;
+    position: relative;
+
+    &::before {
+      content: '+';
+      position: absolute;
+      left: 0;
+      color: $blue;
+    }
+
     cursor: pointer;
     & > * {
       display: inline;
@@ -201,6 +234,10 @@ details.sidebar-spoiler {
   &[open] {
     summary {
       margin-bottom: 0.5em;
+
+      &::before {
+        content: '−';
+      }
     }
   }
 }
@@ -214,14 +251,14 @@ details.sidebar-spoiler {
 
     .main-spoiler__title {
       cursor: pointer;
-      color: #0070ff;
-      border-bottom: 1px dashed blue;
+      color: $blue;
+      border-bottom: 1px dashed $blue;
     }
 
     .main-spoiler__toggler {
       display: inline-block;
       background-color: #9ccff3;
-      color: blue;
+      color: $blue;
       height: 2rem;
       border-radius: 1rem;
       cursor: pointer;
